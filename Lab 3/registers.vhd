@@ -174,10 +174,20 @@ entity shift_register is
 end entity shift_register;
 
 architecture shifter of shift_register is
-	
+
+SIGNAL inputs: std_logic_vector(5 downto 0);
+
 begin
-	-- insert code here.
-end architecture shifter;
+
+inputs <= dir & shamt;
+with inputs select 
+	dataout(31 downto 0) <= datain(30 downto 0) & '0' when "000001",
+		  	        datain(29 downto 0) & '0' & '0' when "000010",
+		  	       '0' & datain(31 downto 1) when "100001",
+		  	       '0' & '0' & datain(31 downto 2) when "100010",
+		   	       datain(31 downto 0) when others;
+		
+end architecture shifter; 
 
 
 
