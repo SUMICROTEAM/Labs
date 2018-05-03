@@ -66,13 +66,16 @@ entity register8 is
 end entity register8;
 
 architecture memmy of register8 is
-signal i: integer RANGE 0 to 7 := 0;
+
 	component bitstorage
 		port(bitin: in std_logic;
 		 	 enout: in std_logic;
 		 	 writein: in std_logic;
 		 	 bitout: out std_logic);
 	end component;
+	
+	signal i: integer RANGE 0 to 7 := 0;
+	
 begin
 
 GenCommand:	for i in 0 to 7 generate
@@ -95,10 +98,29 @@ entity register32 is
 end entity register32;
 
 architecture biggermem of register32 is
-	-- hint: you'll want to put register8 as a component here 
-	-- so you can use it below
+	component register8 
+		port(datain: in std_logic_vector(7 downto 0);
+			enout:  in std_logic;
+			writein: in std_logic;
+			dataout: out std_logic_vector(7 downto 0));
+	end component register8; 
+	signal en8,en16,en32: std_logic := 1;
+	signal write8,write16,write32: std_logic := 0;
 begin
-	-- insert code here.
+
+	en32 <= enout32;
+	en16 <= enout32 AND enout16;
+	en8 <= enout32 AND enout16 AND enout8;
+
+	write32 <= writein32;
+	write16 <= writein32 OR writein16;
+	write8 <= writein32 OR writein16 OR writein8;
+
+
+	B1: register8 port map (datain(7 downto 0),en8,write8,dataout(7 downto 0)
+	B2: register8 port map (datain(15 downto 8),en16,write16,dataout(15 downto 8)
+	B3: register8 port map (datain(23 downto 16),en32,write32,dataout(23 downto 16)
+	B4: register8 port map (datain(31 downto 24),en32,write32,dataout(31 downto 24)
 end architecture biggermem;
 
 --------------------------------------------------------------------------------
