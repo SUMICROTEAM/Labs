@@ -190,11 +190,13 @@ inputs <= dir & shamt;
 with inputs select 
 	dataout(31 downto 0) <= datain(30 downto 0) & '0' when "000001",
 		  	        datain(29 downto 0) & '0' & '0' when "000010",
+				datain(28 downto 0) & '0' & '0' & '0' when "000011",
 		  	       '0' & datain(31 downto 1) when "100001",
 		  	       '0' & '0' & datain(31 downto 2) when "100010",
+			       '0' & '0' & '0' & datain(30 downto 2) when "100011",
 		   	       datain(31 downto 0) when others;
 		
-end architecture shifter; 
+end architecture shifter;  
 
 
 
