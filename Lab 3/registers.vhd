@@ -149,11 +149,18 @@ architecture calc of adder_subtracter is
 	
 	signal cout: std_logic_vector(31 downto 0);
 	signal i: integer range 0 to 31 := 0;
+	signal Bdata: std_logic_vector(31 downto 0);
 	
 begin
-		B0: fulladder port map (datain_a(0),datain_b(0),'0',dataout(0),cout(0));
+
+	with add_sub select
+	Bdata <= NOT datain_b when '1',
+			datain_b when '0',
+			"XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" when others;
+
+		B0: fulladder port map (datain_a(0),Bdata(0),add_sub,dataout(0),cout(0));
 L1:	for i in 1 to 31 generate
-		Bi: fulladder port map (datain_a(i),datain_b(i),cout(i-1),dataout(i),cout(i));
+		Bi: fulladder port map (datain_a(i),Bdata(i),cout(i-1),dataout(i),cout(i));
 	end generate;
 
 	co <= cout(31);
