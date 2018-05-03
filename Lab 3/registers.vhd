@@ -66,6 +66,7 @@ entity register8 is
 end entity register8;
 
 architecture memmy of register8 is
+signal i: integer RANGE 0 to 7 := 0;
 	component bitstorage
 		port(bitin: in std_logic;
 		 	 enout: in std_logic;
@@ -73,7 +74,11 @@ architecture memmy of register8 is
 		 	 bitout: out std_logic);
 	end component;
 begin
-	-- insert your code here.
+
+GenCommand:	for i in 0 to 7 generate
+		Li: bitstorage port map (datain(i),enout,writein,dataout(i));
+	end generate;
+	
 end architecture memmy;
 
 --------------------------------------------------------------------------------
