@@ -138,9 +138,33 @@ entity adder_subtracter is
 end entity adder_subtracter;
 
 architecture calc of adder_subtracter is
-
+	component fulladder
+		port (a : in std_logic;
+			  b : in std_logic;
+			  cin : in std_logic;
+			  sum : out std_logic;
+			  carry : out std_logic
+			 );
+	end component fulladder;
+	
+	signal cout: std_logic_vector(31 downto 0);
+	signal i: integer range 0 to 31 := 0;
+	signal Bdata: std_logic_vector(31 downto 0);
+	
 begin
-	-- insert code here.
+
+	with add_sub select
+	Bdata <= NOT datain_b when '1',
+			datain_b when '0',
+			"XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" when others;
+
+		B0: fulladder port map (datain_a(0),Bdata(0),add_sub,dataout(0),cout(0));
+L1:	for i in 1 to 31 generate
+		Bi: fulladder port map (datain_a(i),Bdata(i),cout(i-1),dataout(i),cout(i));
+	end generate;
+
+	co <= cout(31);
+	
 end architecture calc;
 
 --------------------------------------------------------------------------------
@@ -157,10 +181,22 @@ entity shift_register is
 end entity shift_register;
 
 architecture shifter of shift_register is
-	
+
+SIGNAL inputs: std_logic_vector(5 downto 0);
+
 begin
-	-- insert code here.
-end architecture shifter;
+
+inputs <= dir & shamt;
+with inputs select 
+	dataout(31 downto 0) <= datain(30 downto 0) & '0' when "000001",
+		  	        datain(29 downto 0) & '0' & '0' when "000010",
+				datain(28 downto 0) & '0' & '0' & '0' when "000011",
+		  	       '0' & datain(31 downto 1) when "100001",
+		  	       '0' & '0' & datain(31 downto 2) when "100010",
+			       '0' & '0' & '0' & datain(31 downto 3) when "100011",
+		   	       datain(31 downto 0) when others;
+		
+end architecture shifter;  
 
 
 
