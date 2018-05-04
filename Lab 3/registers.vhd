@@ -193,7 +193,7 @@ with inputs select
 				datain(28 downto 0) & '0' & '0' & '0' when "000011",
 		  	       '0' & datain(31 downto 1) when "100001",
 		  	       '0' & '0' & datain(31 downto 2) when "100010",
-			       '0' & '0' & '0' & datain(30 downto 2) when "100011",
+			       '0' & '0' & '0' & datain(31 downto 3) when "100011",
 		   	       datain(31 downto 0) when others;
 		
 end architecture shifter;  
