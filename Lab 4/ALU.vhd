@@ -36,9 +36,9 @@ architecture ALU_Arch of ALU is
 	
 	signal AddSubRes,ShiftRes: std_logic_vector(31 downto 0);
 begin
-	AddSub: adder_subtracter PORT MAP(DataIn1,DataIn2,ALUCtrl(   ),ALUResult,);
+	AddSub: adder_subtracter PORT MAP(DataIn1,DataIn2,ALUCtrl(1),ALUResult,);
 	
-	Shift: shift_register PORT MAP(DataIn1,ALUCtrl(   ),DataIn2,ALUResult)
+	Shift: shift_register PORT MAP(DataIn1,ALUCtrl(0),DataIn2,ALUResult)
 	
 	with ALUCtrl(4 downto 2) select 
 	ALUResult <= AddSubRes when "000",
