@@ -34,25 +34,23 @@ architecture ALU_Arch of ALU is
 			dataout: out std_logic_vector(31 downto 0));
 	end component shift_register;
 	
-	signal AddSubRes,ShiftRes,Res: std_logic_vector(31 downto 0);
-	signal foo: std_logic;
+	signal AddSubRes,ShiftRes: std_logic_vector(31 downto 0);
 begin
-	AddSub: adder_subtracter PORT MAP(DataIn1,DataIn2,ALUCtrl(1),AddSubRes,foo);
+	AddSub: adder_subtracter PORT MAP(DataIn1,DataIn2,ALUCtrl(1),ALUResult,);
 	
-	Shift: shift_register PORT MAP(DataIn1,ALUCtrl(0),DataIn2(4 downto 0),ShiftRes);
+	Shift: shift_register PORT MAP(DataIn1,ALUCtrl(0),DataIn2,ALUResult)
 	
 	with ALUCtrl(4 downto 2) select 
-	Res <= AddSubRes when "000",
-		 ShiftRes when "011",
-		 DataIn1 AND DataIn2 when "001",
-		 DataIn1 OR DataIn2 when "010",
-		 DataIn2 when others;
+	ALUResult <= AddSubRes when "000",
+				 ShiftRes when "011",
+				 DataIn1 AND DataIn2 when "001",
+				 DataIn1 OR DataIn2 when "010",
+				 DataIn2 when "100",
+				 h(ZZZZZZZZ) when others;
 	
-	with Res select
-	Zero <= '1' when x"00000000",
+	with ALUResult select
+	Zero <= '1' when h(00000000),
 			'0' when others;
-	
-	ALUResult <= Res;
 
 end architecture ALU_Arch;
 
