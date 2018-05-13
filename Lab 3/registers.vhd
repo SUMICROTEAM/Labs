@@ -155,8 +155,7 @@ begin
 
 	with add_sub select
 	Bdata <= NOT datain_b when '1',
-			datain_b when '0',
-			"XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" when others;
+			datain_b when others;
 
 		B0: fulladder port map (datain_a(0),Bdata(0),add_sub,dataout(0),cout(0));
 L1:	for i in 1 to 31 generate
