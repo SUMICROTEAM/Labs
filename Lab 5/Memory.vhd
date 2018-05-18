@@ -33,19 +33,19 @@ begin
           i_ram(i) <= X"00000000";
       end loop;
     end if;
-
-    if (falling_edge(Clock) AND WE AND Address < b"000000000000000000000111111101") then -- WE in this spot could cause issues, move if no function, Use to_integer(unsigned(Address)) to index the i_ram array
+ 
+    if (falling_edge(Clock) AND WE = '1' AND Address < b"00000000000000000000010000000") then -- WE in this spot could cause issues, move if no function, Use to_integer(unsigned(Address)) to index the i_ram array
 		i_ram(to_integer(unsigned(Address))) <= DataIn;
     end if;
 
-	if ((OE == 0) AND Address < b"000000000000000000000111111101") then
+	if ((OE = '0') AND Address < b"00000000000000000000010000000") then
 		DataOut <= i_ram(to_integer(unsigned(Address)));
 	else
-		DataOut <= x"ZZZZZZZZ";
+		DataOut <= "ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ";  
 	end if;
 	
 	
-  end process RamProc;
+  end process RamProc; 
 
 end staticRAM;	
 
@@ -74,9 +74,29 @@ architecture remember of Registers is
 		 dataout: out std_logic_vector(31 downto 0));
 	end component;
 	
+	type ram_type is array (0 to 31) of std_logic_vector(31 downto 0);
+	signal reg_ram : ram_type;
+	
 begin
-    -- Add your code here for the Register Bank implementation
+	Gen_Reg:
+		for I in 0 to 31 generate
+			reg_ram(I) : register32 port map (din(I)...
+		
+	end generate Gen_Reg;
 
+
+
+
+	RamProc: process(WriteCmd,WriteData,WriteReg, ReadReg1,ReadReg2) is
+	begin
+	if (WriteCmd = '1') then
+		reg_ram(to_integer(unsigned(WriteReg))) <= WriteData;
+	end if;
+	
+	ReadData1 <= reg_ram(to_integer(unsigned(ReadReg1)));
+	ReadData2 <= reg_ram(to_integer(unsigned(ReadReg2)));
+	
+	end process RamProc;
 end remember;
 -------------------------------------------------------------------------------------------------------------------------------------------------
 -- ALL CODE BELOW IS 32 BIT REGISTER IMPLEMENTATION NO EDITS NEEDED --
