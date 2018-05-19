@@ -73,26 +73,23 @@ architecture remember of Registers is
 		 writein32, writein16, writein8: in std_logic;
 		 dataout: out std_logic_vector(31 downto 0));
 	end component;
-	
-	type ram_type is array (0 to 31) of std_logic_vector(31 downto 0);
+	 
+	type ram_type is array (0 to 31) of std_logic_vector(31 downto 0); 
 	signal reg_ram : ram_type;
+	signal out32, out16, out8: std_logic := '1';
 	
 begin
-	Gen_Reg:
-		for I in 0 to 31 generate
-			reg_ram(I) : register32 port map (din(I)...
-		
-	end generate Gen_Reg;
+	Create_Register32_Bank:
+	for I in 0 to 31 generate
+	reg_ram(I): register32 port map (datain(31 downto 0), out32, out16, out8, writein32, writein16, writein8, dataout(31 downto 0));
+	end generate Create_Register32_Bank;
 
-
-
-
+	
 	RamProc: process(WriteCmd,WriteData,WriteReg, ReadReg1,ReadReg2) is
 	begin
 	if (WriteCmd = '1') then
 		reg_ram(to_integer(unsigned(WriteReg))) <= WriteData;
 	end if;
-	
 	ReadData1 <= reg_ram(to_integer(unsigned(ReadReg1)));
 	ReadData2 <= reg_ram(to_integer(unsigned(ReadReg2)));
 	
