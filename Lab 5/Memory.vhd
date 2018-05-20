@@ -74,23 +74,34 @@ architecture remember of Registers is
 		 dataout: out std_logic_vector(31 downto 0));
 	end component;
 	signal out32, out16, out8: std_logic := '1';
-	
+	type reg_arr is array (31 downto 0) of std_logic_vector(31 downto 0);
+	signal read_data,write_data : reg_arr;
+	signal ActualRead1,ActualRead2,ActualWrite: std_logic_vector(4 downto 0);
 begin
-	Create_Register32_Bank: for I in 0 to 31 generate
-	reg_ramI: register32 port map (datain(31 downto 0), out32, out16, out8, writein32, writein16, writein8, dataout(31 downto 0));
-	end generate Create_Register32_Bank;
+	-- Make Signals only capable of being 0 or 10-17
+	with ReadReg1 select
+	ActualRead1 <= ReadReg1 when ("01010" OR "01011" OR "01100" OR "01101" OR "01110" OR "01111" OR "10000" OR "10001" OR "00000"),
+				"ZZZZZ" when others;
+	with ReadReg2 select			
+	ActualRead2 <= ReadReg2 when ("01010" OR "01011" OR "01100" OR "01101" OR "01110" OR "01111" OR "10000" OR "10001" OR "00000"),
+				"ZZZZZ" when others;
+	-- Can only Write to 10-17, no others are allowed
+	with ActualWrite select			
+	ActualWrite <= ActualWrite when ("01010" OR "01011" OR "01100" OR "01101" OR "01110" OR "01111" OR "10000" OR "10001"),
+				"ZZZZZ" when others;
+	-- 32 instances of register32, only using 9 of them
+	RegInst: for I in 0 to 31 generate
+		RegI : register32 PORT MAP(write_data(I),out32,out16,out8,WriteCmd,WriteCmd,WriteCmd,read_data(I));
+	end generate;
+	-- Read Data from the desired registers
+	ReadData1 <= read_data(to_integer(unsigned(ActualRead1)));
+	ReadData2 <= read_data(to_integer(unsigned(ActualRead2)));
+	
+	-- This is where Im lost, how to only write the data for this one and not have the whole array pushe din each time. Might wanna wait to ask him in lab
+	write_data(to_integer(unsigned(ActualWrite))) <= WriteData;
 
-	
-	
-	RamProc: process(WriteCmd,WriteData,WriteReg,ReadReg1,ReadReg2) is
-	begin
-	if (WriteCmd = '1') then
-		reg_ram(to_integer(unsigned(WriteReg))) <= WriteData;
-	end if;
-	ReadData1 <= reg_ram & to_integer(unsigned(ReadReg1));
-	ReadData2 <= reg_ram & to_integer(unsigned(ReadReg2));
-	
-	end process RamProc;
+
+
 end remember;
 -------------------------------------------------------------------------------------------------------------------------------------------------
 -- ALL CODE BELOW IS 32 BIT REGISTER IMPLEMENTATION NO EDITS NEEDED --
