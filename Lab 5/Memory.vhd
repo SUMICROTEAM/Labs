@@ -72,12 +72,41 @@ architecture remember of Registers is
 		 dataout: out std_logic_vector(31 downto 0));
 	end component;
 	signal out32, out16, out8: std_logic := '1';
+	
 	signal ActualRead1,ActualRead2,ActualWrite: std_logic_vector(4 downto 0);
+	
+	signal ActualWriteCmd: std_logic_vector(8 downto 0);
+	
 begin
+--Control Signal Logic
+with ReadReg1 Select
+ReadReg1 <= ReadReg1 when ("00000"OR"00001"OR"00010"OR"00011"OR"00100"OR"00101"OR"00110"OR"00111"OR"01000"),
+			"ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ" when others;
+			
+with ReadReg2 Select
+ReadReg2 <= ReadReg2 when ("00000"OR"00001"OR"00010"OR"00011"OR"00100"OR"00101"OR"00110"OR"00111"OR"01000"),
+			"ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ" when others;
+			
+with WriteData Select
+WriteData <= WriteData when ("00001"OR"00010"OR"00011"OR"00100"OR"00101"OR"00110"OR"00111"OR"01000"),
+			X"00000000" when others;
 
+-- 0 is for x0, 1-8 is for a0-a7
+--Instantiate The reg32 for all 9
 for I in 0 to 8 generate
-	RegI : register32 Port Map(  ,out32,out16,out8,WriteCmd,WriteCmd,WriteCmd,  );
+	RegI : register32 Port Map(WriteData,out32,out16,out8,ActualWriteCmd(I),ActualWriteCmd(I),ActualWriteCmd(I),);
 End generate;
+
+--Write Data To Reg
+process(WriteCmd)
+	if(falling_edge(WriteCmd))
+		ActualWriteCmd(WriteReg) <= WriteCmd;
+	end if;
+end process;
+
+--Read Data Out
+
+
 
 
 end remember;
