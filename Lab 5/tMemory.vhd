@@ -190,80 +190,95 @@ BEGIN
 		wait for 5 ns;
 
 		-- Register Bank tests
+		dataIn   <= X"11111111"; --Writing an arbituary value to the zero reg.
+		writeReg <= "00000";
+		writeCmd <= '1';
+		wait for 5 ns;	
+		writeCmd <= '0';
+		wait for 5 ns;	
+			
 		dataIn   <= X"11111111";
-		writeReg <= "01010";
+		writeReg <= "00001";
 		writeCmd <= '1';
 		wait for 5 ns;	
 		writeCmd <= '0';
 		wait for 5 ns;	
 
 		dataIn   <= X"22222222";
-		writeReg <= "01011";
+		writeReg <= "00010";
 		writeCmd <= '1';
 		wait for 5 ns;	
 		writeCmd <= '0';
 		wait for 5 ns;	
 
 		dataIn   <= X"33333333";
-		writeReg <= "01100";
+		writeReg <= "00011";
 		writeCmd <= '1';
 		wait for 5 ns;	
 		writeCmd <= '0';
 		wait for 5 ns;	
 
 		dataIn   <= X"44444444";
-		writeReg <= "01101";
+		writeReg <= "00100";
 		writeCmd <= '1';
 		wait for 5 ns;	
 		writeCmd <= '0';
 		wait for 5 ns;	
 
 		dataIn   <= X"55555555";
-		writeReg <= "01110";
+		writeReg <= "00101";
 		writeCmd <= '1';
 		wait for 5 ns;	
 		writeCmd <= '0';
 		wait for 5 ns;	
 
 		dataIn   <= X"66666666";
-		writeReg <= "01111";
+		writeReg <= "00110";
 		writeCmd <= '1';
 		wait for 5 ns;	
 		writeCmd <= '0';
 		wait for 5 ns;	
 
 		dataIn   <= X"77777777";
-		writeReg <= "10000";
+		writeReg <= "00111";
 		writeCmd <= '1';
 		wait for 5 ns;	
 		writeCmd <= '0';
 		wait for 5 ns;	
 
 		dataIn   <= X"88888888";
-		writeReg <= "10001";
+		writeReg <= "01000";
 		writeCmd <= '1';
 		wait for 5 ns;	
 		writeCmd <= '0';
 		wait for 5 ns;	
 
-		readReg1 <= "00000";
-		readReg2 <= "01010";
+		--Writing to a reg that we didn't create.
+		dataIn   <= X"88888888";
+		writeReg <= "01001"; -- reg 9
+		writeCmd <= '1';
+		wait for 5 ns;	
+		writeCmd <= '0';
+		wait for 5 ns;	
+
+		readReg1 <= "00000"; 
+		readReg2 <= "00001";
 		wait for 10 ns;	
 
-		readReg1 <= "01011";
-		readReg2 <= "01100";
+		readReg1 <= "00010";
+		readReg2 <= "00011";
 		wait for 10 ns;	
 
-		readReg1 <= "01101";
-		readReg2 <= "01110";
+		readReg1 <= "00100";
+		readReg2 <= "00101";
 		wait for 10 ns;	
 
-		readReg1 <= "01111";
-		readReg2 <= "10000";
+		readReg1 <= "00110";
+		readReg2 <= "00111";
 		wait for 10 ns;	
 
-		readReg1 <= "10001";
-		readReg2 <= "00000";
+		readReg1 <= "01000";
+		readReg2 <= "01001"; -- try to read from reg 9
 		wait for 10 ns;	
 
 		wait; -- will wait forever
