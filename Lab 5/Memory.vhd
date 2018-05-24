@@ -74,7 +74,8 @@ architecture remember of Registers is
 	signal out32, out16, out8: std_logic := '1';
 	
 	signal ActualRead1,ActualRead2,ActualWrite: std_logic_vector(4 downto 0);
-	
+	type read_data is array of std_logic_vector(31 downto 0);
+	signal read_dataout: read_data;
 	signal ActualWriteCmd: std_logic_vector(8 downto 0);
 	
 begin
@@ -88,23 +89,41 @@ ReadReg2 <= ReadReg2 when ("00000"OR"00001"OR"00010"OR"00011"OR"00100"OR"00101"O
 			"ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ" when others;
 			
 with WriteData Select
-WriteData <= WriteData when ("00001"OR"00010"OR"00011"OR"00100"OR"00101"OR"00110"OR"00111"OR"01000"),
-			X"00000000" when others;
+WriteReg <= WriteReg when ("00001"OR"00010"OR"00011"OR"00100"OR"00101"OR"00110"OR"00111"OR"01000"),
+			"00000" when others;
 
 -- 0 is for x0, 1-8 is for a0-a7
 --Instantiate The reg32 for all 9
 for I in 0 to 8 generate
-	RegI : register32 Port Map(WriteData,out32,out16,out8,ActualWriteCmd(I),ActualWriteCmd(I),ActualWriteCmd(I),);
+	RegI : register32 Port Map(WriteData,out32,out16,out8,ActualWriteCmd(I),ActualWriteCmd(I),ActualWriteCmd(I),read_dataout(I));
 End generate;
 
 --Write Data To Reg
 process(WriteCmd)
-	if(falling_edge(WriteCmd))
-		ActualWriteCmd(WriteReg) <= WriteCmd;
+	if(falling_edge(WriteCmd) AND  WriteReg /= "00000") then
+		if    WriteCmd == "01000" then
+			ActualWriteCmd<= WriteCmd & "00000000";
+		elsif WriteCmd == "00111" then
+			ActualWriteCmd <= "0" & WriteCmd & "0000000";
+		elsif WriteCmd == "00110" then
+			ActualWriteCmd <= "00" & WriteCmd & "000000";
+		elsif WriteCmd == "00101" then
+			ActualWriteCmd <= "000" & WriteCmd & "00000";
+		elsif WriteCmd == "00100" then
+			ActualWriteCmd <= "0000" & WriteCmd & "0000";
+		elsif WriteCmd == "00011" then
+			ActualWriteCmd <= "00000" & WriteCmd & "000";
+		elsif WriteCmd == "00010" then
+			ActualWriteCmd <= "000000" & WriteCmd & "00";
+		elsif WriteCmd == "00001" then
+			ActualWriteCmd <= "0000000" & WriteCmd & "0";
+		end if;
 	end if;
 end process;
 
 --Read Data Out
+ReadData1 <= read_dataout(to_integer(unsigned(ReadReg1)));
+ReadData2 <= read_dataout(to_integer(unsigned(ReadReg2)));
 
 
 
