@@ -104,22 +104,22 @@ End generate;
 process(WriteCmd)
 begin
 	if (falling_edge(WriteCmd) AND  writetemp /= "00000") then
-		if    WriteCmd = "01000" then
+		if    WriteReg= "01000" then
 			ActualWriteCmd <= WriteCmd & "00000000";
-		elsif WriteCmd = "00111" then
-			ActualWriteCmd <= "0" & WriteCmd & "0000000";
-		elsif WriteCmd = "00110" then
+		elsif WriteReg = "00111" then
+			ActualWriteCmd <= '0' & WriteCmd & "0000000";
+		elsif WriteReg = "00110" then
 			ActualWriteCmd <= "00" & WriteCmd & "000000";
-		elsif WriteCmd = "00101" then
+		elsif WriteReg = "00101" then
 			ActualWriteCmd <= "000" & WriteCmd & "00000";
-		elsif WriteCmd = "00100" then
+		elsif WriteReg = "00100" then
 			ActualWriteCmd <= "0000" & WriteCmd & "0000";
-		elsif WriteCmd = "00011" then
+		elsif WriteReg = "00011" then
 			ActualWriteCmd <= "00000" & WriteCmd & "000";
-		elsif WriteCmd = "00010" then
+		elsif WriteReg = "00010" then
 			ActualWriteCmd <= "000000" & WriteCmd & "00";
-		elsif WriteCmd = "00001" then
-			ActualWriteCmd <= "0000000" & WriteCmd & "0";
+		elsif WriteReg = "00001" then
+			ActualWriteCmd <= "0000000" & WriteCmd & '0';
 		end if;
 	end if;
 end process;
@@ -229,4 +229,3 @@ begin
 	-- Note that data is output only when enout = 0	
 	bitout <= q when enout = '0' else 'Z';
 end architecture memlike;
-
