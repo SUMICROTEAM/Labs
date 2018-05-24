@@ -73,26 +73,52 @@ architecture remember of Registers is
 	end component;
 	signal out32, out16, out8: std_logic := '1';
 	
-	signal ActualRead1,ActualRead2,ActualWrite: std_logic_vector(4 downto 0);
 	type read_data is array (8 downto 0) of std_logic_vector(31 downto 0);
 	signal read_dataout: read_data;
 	signal ActualWriteCmd: std_logic_vector(8 downto 0);
 	signal readtemp1, readtemp2,writetemp: std_logic_vector(4 downto 0);
+	signal testsig: std_logic;
 	
 begin
 --Control Signal Logic
-with ReadReg1 Select
-readtemp1 <= ReadReg1 when ("00000"OR"00001"OR"00010"OR"00011"OR"00100"OR"00101"OR"00110"OR"00111"OR"01000"),
-			"ZZZZZ" when others;
-			
-with ReadReg2 Select
-readtemp2 <= ReadReg2 when ("00000"OR"00001"OR"00010"OR"00011"OR"00100"OR"00101"OR"00110"OR"00111"OR"01000"),
-			"ZZZZZ" when others;
-			
-with WriteReg Select
-writetemp <= WriteReg when ("00001"OR"00010"OR"00011"OR"00100"OR"00101"OR"00110"OR"00111"OR"01000"),
-			"00000" when others;
+--readtemp1 <= ReadReg1 when ReadReg1 = ("00000"OR"00001"OR"00010"OR"00011"OR"00100"OR"00101"OR"00110"OR"00111"OR"01000") else "ZZZZZ";
 
+with ReadReg1 select
+readtemp1 <= "00000" when "00000",
+			 "00001" when "00001",
+			 "00010" when "00010",
+			 "00011" when "00011",
+			 "00100" when "00100",
+			 "00101" when "00101",
+			 "00110" when "00110",
+			 "00111" when "00111",
+			 "01000" when "01000",
+			 "ZZZZZ" when others;
+			 
+			 
+--readtemp2 <= "ZZZZZ" when ReadReg2 /= ("00000"OR"00001"OR"00010"OR"00011"OR"00100"OR"00101"OR"00110"OR"00111"OR"01000") else ReadReg2;
+with ReadReg2 select
+readtemp2 <= "00000" when "00000",
+			 "00001" when "00001",
+			 "00010" when "00010",
+			 "00011" when "00011",
+			 "00100" when "00100",
+			 "00101" when "00101",
+			 "00110" when "00110",
+			 "00111" when "00111",
+			 "01000" when "01000",
+			 "ZZZZZ" when others;
+--writetemp <= "00000" when WriteReg /= ("00001"OR"00010"OR"00011"OR"00100"OR"00101"OR"00110"OR"00111"OR"01000") else WriteReg;
+with WriteReg select
+writetemp <= "00001" when "00001",
+			 "00010" when "00010",
+			 "00011" when "00011",
+			 "00100" when "00100",
+			 "00101" when "00101",
+			 "00110" when "00110",
+			 "00111" when "00111",
+			 "01000" when "01000",
+			 "00000" when others;
 -- 0 is for x0, 1-8 is for a0-a7
 --Instantiate The reg32 for all 9
 
@@ -103,23 +129,24 @@ End generate;
 --Write Data To Reg
 process(WriteCmd)
 begin
+	testsig <= '1';
 	if (falling_edge(WriteCmd) AND  writetemp /= "00000") then
-		if    WriteReg= "01000" then
-			ActualWriteCmd <= WriteCmd & "00000000";
+		if    WriteReg = "01000" then
+			ActualWriteCmd <= '1' & "00000000";
 		elsif WriteReg = "00111" then
-			ActualWriteCmd <= '0' & WriteCmd & "0000000";
+			ActualWriteCmd <= '0' & '1' & "0000000";
 		elsif WriteReg = "00110" then
-			ActualWriteCmd <= "00" & WriteCmd & "000000";
+			ActualWriteCmd <= "00" & '1' & "000000";
 		elsif WriteReg = "00101" then
-			ActualWriteCmd <= "000" & WriteCmd & "00000";
+			ActualWriteCmd <= "000" & '1' & "00000";
 		elsif WriteReg = "00100" then
-			ActualWriteCmd <= "0000" & WriteCmd & "0000";
+			ActualWriteCmd <= "0000" & '1' & "0000";
 		elsif WriteReg = "00011" then
-			ActualWriteCmd <= "00000" & WriteCmd & "000";
+			ActualWriteCmd <= "00000" & '1' & "000";
 		elsif WriteReg = "00010" then
-			ActualWriteCmd <= "000000" & WriteCmd & "00";
+			ActualWriteCmd <= "000000" & '1' & "00";
 		elsif WriteReg = "00001" then
-			ActualWriteCmd <= "0000000" & WriteCmd & '0';
+			ActualWriteCmd <= "0000000" & '1' & '0';
 		end if;
 	end if;
 end process;
