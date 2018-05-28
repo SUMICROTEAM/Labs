@@ -71,18 +71,15 @@ architecture remember of Registers is
 		 writein32, writein16, writein8: in std_logic;
 		 dataout: out std_logic_vector(31 downto 0));
 	end component;
-	signal out32, out16, out8: std_logic := '1';
+	signal out32, out16, out8: std_logic := '0';
 	
 	type read_data is array (8 downto 0) of std_logic_vector(31 downto 0);
 	signal read_dataout: read_data;
 	signal ActualWriteCmd: std_logic_vector(8 downto 0);
-	signal readtemp1, readtemp2,writetemp: std_logic_vector(4 downto 0);
-	signal testsig: std_logic;
+	signal readtemp1, readtemp2, writetemp: std_logic_vector(4 downto 0);
 	
 begin
 --Control Signal Logic
---readtemp1 <= ReadReg1 when ReadReg1 = ("00000"OR"00001"OR"00010"OR"00011"OR"00100"OR"00101"OR"00110"OR"00111"OR"01000") else "ZZZZZ";
-
 with ReadReg1 select
 readtemp1 <= "00000" when "00000",
 			 "00001" when "00001",
@@ -94,9 +91,7 @@ readtemp1 <= "00000" when "00000",
 			 "00111" when "00111",
 			 "01000" when "01000",
 			 "ZZZZZ" when others;
-			 
-			 
---readtemp2 <= "ZZZZZ" when ReadReg2 /= ("00000"OR"00001"OR"00010"OR"00011"OR"00100"OR"00101"OR"00110"OR"00111"OR"01000") else ReadReg2;
+
 with ReadReg2 select
 readtemp2 <= "00000" when "00000",
 			 "00001" when "00001",
@@ -108,7 +103,7 @@ readtemp2 <= "00000" when "00000",
 			 "00111" when "00111",
 			 "01000" when "01000",
 			 "ZZZZZ" when others;
---writetemp <= "00000" when WriteReg /= ("00001"OR"00010"OR"00011"OR"00100"OR"00101"OR"00110"OR"00111"OR"01000") else WriteReg;
+
 with WriteReg select
 writetemp <= "00001" when "00001",
 			 "00010" when "00010",
@@ -119,6 +114,7 @@ writetemp <= "00001" when "00001",
 			 "00111" when "00111",
 			 "01000" when "01000",
 			 "00000" when others;
+			 
 -- 0 is for x0, 1-8 is for a0-a7
 --Instantiate The reg32 for all 9
 
@@ -129,25 +125,28 @@ End generate;
 --Write Data To Reg
 process(WriteCmd)
 begin
-	testsig <= '1';
-	if (falling_edge(WriteCmd) AND  writetemp /= "00000") then
+	if (falling_edge(WriteCmd)) then
 		if    WriteReg = "01000" then
-			ActualWriteCmd <= '1' & "00000000";
+			ActualWriteCmd <= '0' & "11111111"; 
 		elsif WriteReg = "00111" then
-			ActualWriteCmd <= '0' & '1' & "0000000";
+			ActualWriteCmd <= '1' & '0' & "1111111";
 		elsif WriteReg = "00110" then
-			ActualWriteCmd <= "00" & '1' & "000000";
+			ActualWriteCmd <= "11" & '0' & "111111";
 		elsif WriteReg = "00101" then
-			ActualWriteCmd <= "000" & '1' & "00000";
+			ActualWriteCmd <= "111" & '0' & "11111";
 		elsif WriteReg = "00100" then
-			ActualWriteCmd <= "0000" & '1' & "0000";
+			ActualWriteCmd <= "1111" & '0' & "1111";
 		elsif WriteReg = "00011" then
-			ActualWriteCmd <= "00000" & '1' & "000";
+			ActualWriteCmd <= "11111" & '0' & "111";
 		elsif WriteReg = "00010" then
-			ActualWriteCmd <= "000000" & '1' & "00";
+			ActualWriteCmd <= "111111" & '0' & "11";
 		elsif WriteReg = "00001" then
-			ActualWriteCmd <= "0000000" & '1' & '0';
+			ActualWriteCmd <= "1111111" & '0' & '1';
+		elsif WriteReg = "00000" then
+			ActualWriteCmd <= "111111111";
 		end if;
+	else
+		ActualWriteCmd <= "111111111";
 	end if;
 end process;
 
