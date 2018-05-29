@@ -1,3 +1,4 @@
+
 --------------------------------------------------------------------------------
 -- LAB #5 - Memory and Register Bank --
 --------------------------------------------------------------------------------
@@ -125,28 +126,28 @@ End generate;
 --Write Data To Reg
 process(WriteCmd)
 begin
-	if (falling_edge(WriteCmd)) then
+	if (rising_edge(WriteCmd)) then
 		if    WriteReg = "01000" then
-			ActualWriteCmd <= '0' & "11111111"; 
+			ActualWriteCmd <= '1' & "00000000"; 
 		elsif WriteReg = "00111" then
-			ActualWriteCmd <= '1' & '0' & "1111111";
+			ActualWriteCmd <= '0' & '1' & "0000000";
 		elsif WriteReg = "00110" then
-			ActualWriteCmd <= "11" & '0' & "111111";
+			ActualWriteCmd <= "00" & '1' & "000000";
 		elsif WriteReg = "00101" then
-			ActualWriteCmd <= "111" & '0' & "11111";
+			ActualWriteCmd <= "000" & '1' & "00000";
 		elsif WriteReg = "00100" then
-			ActualWriteCmd <= "1111" & '0' & "1111";
+			ActualWriteCmd <= "0000" & '1' & "0000";
 		elsif WriteReg = "00011" then
-			ActualWriteCmd <= "11111" & '0' & "111";
+			ActualWriteCmd <= "00000" & '1' & "000";
 		elsif WriteReg = "00010" then
-			ActualWriteCmd <= "111111" & '0' & "11";
+			ActualWriteCmd <= "000000" & '1' & "00";
 		elsif WriteReg = "00001" then
-			ActualWriteCmd <= "1111111" & '0' & '1';
+			ActualWriteCmd <= "0000000" & '1' & '0';
 		elsif WriteReg = "00000" then
-			ActualWriteCmd <= "111111111";
+			ActualWriteCmd <= "000000000";
 		end if;
 	else
-		ActualWriteCmd <= "111111111";
+		ActualWriteCmd <= "000000000";
 	end if;
 end process;
 
