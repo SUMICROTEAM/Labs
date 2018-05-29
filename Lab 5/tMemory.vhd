@@ -147,7 +147,7 @@ BEGIN
 		clock <= '0';
 		wait for 5 ns;
 
-		address <= X"00000001";
+		address <= X"00000001"; --Test a value which holds h00000000
 		clock <= '1';
 		wait for 5 ns;
 		clock <= '0';
