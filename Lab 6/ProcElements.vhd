@@ -16,7 +16,12 @@ end entity BusMux2to1;
 
 architecture selection of BusMux2to1 is
 begin
--- Add your code here
+
+with slector select
+Result <= In1 when '1',
+		  In0 when '0',
+		  "ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ" when others;
+		  
 end architecture selection;
 
 --------------------------------------------------------------------------------
@@ -61,7 +66,9 @@ end entity ProgramCounter;
 
 architecture executive of ProgramCounter is
 begin
--- Add your code here
+
+process (Reset,Clock)
+if 
 
 end executive;
 --------------------------------------------------------------------------------
