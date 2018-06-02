@@ -68,7 +68,14 @@ architecture executive of ProgramCounter is
 begin
 
 process (Reset,Clock)
-if 
+	if(Reset = '1') then
+		PCout <= X"00400000";
+	end if;
+	
+	if rising_edge(Clock) then
+		PCout <= PCin;
+	end if;
+end process;
 
 end executive;
 --------------------------------------------------------------------------------
