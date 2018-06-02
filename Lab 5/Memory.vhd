@@ -104,17 +104,6 @@ readtemp2 <= "00000" when "00000",
 			 "00111" when "10000",
 			 "01000" when "10001",
 			 "ZZZZZ" when others;
-
-with WriteReg select
-writetemp <= "00001" when "01010",
-			 "00010" when "01011",
-			 "00011" when "01100",
-			 "00100" when "01101",
-			 "00101" when "01110",
-			 "00110" when "01111",
-			 "00111" when "10000",
-			 "01000" when "10001",
-			 "00000" when others;
 			 
 -- 0 is for x0, 1-8 is for a0-a7
 --Instantiate The reg32 for all 9
@@ -127,21 +116,21 @@ End generate;
 process(WriteCmd)
 begin
 	if (rising_edge(WriteCmd)) then
-		if    WriteReg = "01000" then
+		if    WriteReg = "01010" then
 			ActualWriteCmd <= '1' & "00000000"; 
-		elsif WriteReg = "00111" then
+		elsif WriteReg = "01011" then
 			ActualWriteCmd <= '0' & '1' & "0000000";
-		elsif WriteReg = "00110" then
+		elsif WriteReg = "01100" then
 			ActualWriteCmd <= "00" & '1' & "000000";
-		elsif WriteReg = "00101" then
+		elsif WriteReg = "01101" then
 			ActualWriteCmd <= "000" & '1' & "00000";
-		elsif WriteReg = "00100" then
+		elsif WriteReg = "01110" then
 			ActualWriteCmd <= "0000" & '1' & "0000";
-		elsif WriteReg = "00011" then
+		elsif WriteReg = "01111" then
 			ActualWriteCmd <= "00000" & '1' & "000";
-		elsif WriteReg = "00010" then
+		elsif WriteReg = "10000" then
 			ActualWriteCmd <= "000000" & '1' & "00";
-		elsif WriteReg = "00001" then
+		elsif WriteReg = "10001" then
 			ActualWriteCmd <= "0000000" & '1' & '0';
 		elsif WriteReg = "00000" then
 			ActualWriteCmd <= "000000000";
