@@ -116,21 +116,21 @@ End generate;
 process(WriteCmd)
 begin
 	if (rising_edge(WriteCmd)) then
-		if    WriteReg = "01010" then
+		if    WriteReg = "10001" then
 			ActualWriteCmd <= '1' & "00000000"; 
-		elsif WriteReg = "01011" then
-			ActualWriteCmd <= '0' & '1' & "0000000";
-		elsif WriteReg = "01100" then
-			ActualWriteCmd <= "00" & '1' & "000000";
-		elsif WriteReg = "01101" then
-			ActualWriteCmd <= "000" & '1' & "00000";
-		elsif WriteReg = "01110" then
-			ActualWriteCmd <= "0000" & '1' & "0000";
-		elsif WriteReg = "01111" then
-			ActualWriteCmd <= "00000" & '1' & "000";
 		elsif WriteReg = "10000" then
+			ActualWriteCmd <= '0' & '1' & "0000000";
+		elsif WriteReg = "01111" then
+			ActualWriteCmd <= "00" & '1' & "000000";
+		elsif WriteReg = "01110" then
+			ActualWriteCmd <= "000" & '1' & "00000";
+		elsif WriteReg = "01101" then
+			ActualWriteCmd <= "0000" & '1' & "0000";
+		elsif WriteReg = "01100" then
+			ActualWriteCmd <= "00000" & '1' & "000";
+		elsif WriteReg = "01011" then
 			ActualWriteCmd <= "000000" & '1' & "00";
-		elsif WriteReg = "10001" then
+		elsif WriteReg = "01010" then
 			ActualWriteCmd <= "0000000" & '1' & '0';
 		elsif WriteReg = "00000" then
 			ActualWriteCmd <= "000000000";

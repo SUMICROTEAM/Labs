@@ -273,7 +273,7 @@ BEGIN
 		readReg2 <= "01110";
 		wait for 10 ns;	
 
-		readReg1 <= "01111;
+		readReg1 <= "01111";
 		readReg2 <= "10000";
 		wait for 10 ns;	
 
