@@ -84,8 +84,35 @@ architecture holistic of Processor is
 			dataout: out std_logic_vector(31 downto 0);
 			co: out std_logic);
 	end component adder_subtracter;
+------------------------------------------------------------------------------------
+--- ADDED SIGNALS ---
+------------------------------------------------------------------------------------
+-- Processor pathways
+signal PC_Next,PC_Next4,Next_Inst,Branch_Out,Instruction,D1,D2,ImmOrD2,Imm_Out,ALUOut,DmemOut,RegWriteData: std_logic_vector(31 downto 0);
+-- Other stuffs
+signal trash,ALU_Zero,BranchMuxSel: std_logic;
+signal Ctrl_Branch: std_logic_vector(31 downto 0);
 
+
+------------------------------------------------------------------------------------
 begin
-	-- Add your code here
+
+Program_Counter: ProgramCounter Port Map(reset,clock,Next_Inst,PC_Next); 
+
+Add_4_to_PC: adder_subtracter Port Map(PC_Next,X"00000004",'0',PC_Next4,trash);
+
+Branch_Adder: adder_subtracter Port Map(PC_Next,Imm_Out,'0',Branch_Out,trash);
+
+Branch_Mux: BusMux2to1 Port Map(BranchMuxSel,PC_Next4,Branch_Out,Next_Inst);
+
+
+
+-- BRANCH HANDLER -- 
+with Ctrl_Branch & ALU_Zero select
+BranchMuxSel <= '1' when "011" OR "100",
+				'0' when others;
+				
+
+
 end holistic;
 
