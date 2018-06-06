@@ -129,6 +129,8 @@ architecture executive of ProgramCounter is
 begin
 
 process (Reset,Clock)
+	begin
+	
 	if(Reset = '1') then
 		PCout <= X"00400000";
 	end if;
@@ -140,3 +142,25 @@ end process;
 
 end executive;
 --------------------------------------------------------------------------------
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+
+entity ImmGen is
+    Port(FullInstruction: in std_logic_vector(31 downto 0);
+	 ImmGen: in std_logic_vector(1 downto 0);
+	 Modified_Imm: out std_logic_vector(31 downto 0));
+end entity ImmGen;
+
+architecture Generator of ImmGen is
+begin
+
+with ImmGen select 
+Modified_Imm  <=      when "01",
+					  when "10",
+					  when others;
+
+
+
+
+
+end Generator;
