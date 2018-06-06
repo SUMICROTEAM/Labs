@@ -89,9 +89,14 @@ architecture holistic of Processor is
 ------------------------------------------------------------------------------------
 -- Processor pathways
 signal PC_Next,PC_Next4,Next_Inst,Branch_Out,Instruction,D1,D2,ImmOrD2,Imm_Out,ALUOut,DmemOut,RegWriteData: std_logic_vector(31 downto 0);
+-- Control Lines
+signal MemRead,MemtoReg,MemWrite,ALUSrc,RegWrite,BranchMuxSel: std_logic;
+signal Ctrl_Branch, ImmGenerator: std_logic_vector(1 downto 0);
+signal ALUCtrl: std_logic_vector(4 downto 0);
 -- Other stuffs
-signal trash,ALU_Zero,BranchMuxSel: std_logic;
-signal Ctrl_Branch: std_logic_vector(31 downto 0);
+
+signal trash,ALU_Zero: std_logic;
+
 
 
 ------------------------------------------------------------------------------------
@@ -104,6 +109,20 @@ Add_4_to_PC: adder_subtracter Port Map(PC_Next,X"00000004",'0',PC_Next4,trash);
 Branch_Adder: adder_subtracter Port Map(PC_Next,Imm_Out,'0',Branch_Out,trash);
 
 Branch_Mux: BusMux2to1 Port Map(BranchMuxSel,PC_Next4,Branch_Out,Next_Inst);
+
+I_mem: InstructionRAM Port Map(reset,clock,PC_Next,Instruction);
+
+Controller: Control(clock,Instruction( downto ),Instruction( downto ),Instruction( downto ),Ctrl_Branch(1 downto 0),MemRead,MemtoReg,ALUCtrl(4 downto 0),MemWrite,ALUSrc,RegWrite,ImmGenerator(1 downto 0));
+
+Our_Reg: Registers(Instruction(19 downto 15),Instruction(24 downto 20),Instruction(11 downto 7),RegWriteData(31 downto 0),RegWrite,D1(31 downto 0),D2(31 downto 0);
+
+ALU_multiplexor: BusMux2to1(ALUSrc,D2(31 downto 0),Imm_Out(31 downto 0),ImmOrD2(31 downto 0));
+
+Processor_ALU: ALU(D1(31 downto 0),ImmOrD2(31 downto 0),ALUCtrl(4 downto 0),Zero,ALUOut(31 downto 0));
+
+Data_Memory: RAM(reset,clock,  ,  ,D2(31 downto 0),ALUOut(31 downto 0),DmemOut(31 downto 0));
+
+Register_Write_Mux: BusMux2to1(MemtoReg,ALUOut(31 downto 0),DmemOut(31 downto 0),RegWriteData(31 downto 0);
 
 
 
