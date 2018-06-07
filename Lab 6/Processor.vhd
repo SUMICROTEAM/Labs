@@ -84,21 +84,30 @@ architecture holistic of Processor is
 			dataout: out std_logic_vector(31 downto 0);
 			co: out std_logic);
 	end component adder_subtracter;
+	
+	component ImmGen 
+		Port(FullInstruction: in std_logic_vector(31 downto 0);
+			ImmGen: in std_logic_vector(1 downto 0);
+			Modified_Imm: out std_logic_vector(31 downto 0));
+	end component ImmGen;
+	
+	component BranchSel
+		Port( BSel: in std_logic_vector(2 downto 0);
+		BRes: out std_logic);
+	end component BranchSel;
+	
 ------------------------------------------------------------------------------------
 --- ADDED SIGNALS ---
 ------------------------------------------------------------------------------------
 -- Processor pathways
 signal PC_Next,PC_Next4,Next_Inst,Branch_Out,Instruction,D1,D2,ImmOrD2,Imm_Out,ALUOut,DmemOut,RegWriteData: std_logic_vector(31 downto 0);
 -- Control Lines
-signal MemRead,MemtoReg,MemWrite,ALUSrc,RegWrite,BranchMuxSel: std_logic;
+signal MemRead,MemtoReg,MemWrite,ALUSrc,RegWrite,BranchMuxSel,ALU_Zero: std_logic;
 signal Ctrl_Branch, ImmGenerator: std_logic_vector(1 downto 0);
 signal ALUCtrl: std_logic_vector(4 downto 0);
 -- Other stuffs
-
-signal trash,ALU_Zero: std_logic;
-
-
-
+signal trash: std_logic;
+signal BranchSelector: std_logic_vector(2 downto 0);
 ------------------------------------------------------------------------------------
 begin
 
@@ -110,28 +119,24 @@ Branch_Adder: adder_subtracter Port Map(PC_Next,Imm_Out,'0',Branch_Out,trash);
 
 Branch_Mux: BusMux2to1 Port Map(BranchMuxSel,PC_Next4,Branch_Out,Next_Inst);
 
-I_mem: InstructionRAM Port Map(reset,clock,PC_Next,Instruction);
+I_mem: InstructionRAM Port Map(reset,clock,PC_Next(31 downto 2),Instruction);
 
-Controller: Control(clock,Instruction( downto ),Instruction( downto ),Instruction( downto ),Ctrl_Branch(1 downto 0),MemRead,MemtoReg,ALUCtrl(4 downto 0),MemWrite,ALUSrc,RegWrite,ImmGenerator(1 downto 0));
+Controller: Control Port Map(clock,Instruction(6 downto 0),Instruction(14 downto 12),Instruction(31 downto 25),Ctrl_Branch(1 downto 0),MemRead,MemtoReg,ALUCtrl(4 downto 0),MemWrite,ALUSrc,RegWrite,ImmGenerator(1 downto 0));
 
-Our_Reg: Registers(Instruction(19 downto 15),Instruction(24 downto 20),Instruction(11 downto 7),RegWriteData(31 downto 0),RegWrite,D1(31 downto 0),D2(31 downto 0);
+Our_Reg: Registers Port Map(Instruction(19 downto 15),Instruction(24 downto 20),Instruction(11 downto 7),RegWriteData,RegWrite,D1,D2);
 
-ALU_multiplexor: BusMux2to1(ALUSrc,D2(31 downto 0),Imm_Out(31 downto 0),ImmOrD2(31 downto 0));
+ALU_multiplexor: BusMux2to1 Port Map(ALUSrc,D2,Imm_Out,ImmOrD2);
 
-Processor_ALU: ALU(D1(31 downto 0),ImmOrD2(31 downto 0),ALUCtrl(4 downto 0),Zero,ALUOut(31 downto 0));
+Processor_ALU: ALU Port Map(D1,ImmOrD2,ALUCtrl(4 downto 0),ALU_Zero,ALUOut);
 
-Data_Memory: RAM(reset,clock,  ,  ,D2(31 downto 0),ALUOut(31 downto 0),DmemOut(31 downto 0));
+Data_Memory: RAM Port Map(reset,clock,MemRead,MemWrite,D2(31 downto 2),ALUOut,DmemOut);
 
-Register_Write_Mux: BusMux2to1(MemtoReg,ALUOut(31 downto 0),DmemOut(31 downto 0),RegWriteData(31 downto 0);
+Register_Write_Mux: BusMux2to1 Port Map(MemtoReg,ALUOut,DmemOut,RegWriteData);
 
+ImmGeneration: ImmGen Port Map(Instruction,ImmGenerator,Imm_Out);
 
-
--- BRANCH HANDLER -- 
-with Ctrl_Branch & ALU_Zero select
-BranchMuxSel <= '1' when "011" OR "100",
-				'0' when others;
-				
-
-
+BranchSelector <= Ctrl_Branch & ALU_Zero;
+Brancher: BranchSel Port Map(BranchSelector,BranchMuxSel);
+		
 end holistic;
 
