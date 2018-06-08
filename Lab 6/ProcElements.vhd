@@ -168,13 +168,14 @@ end entity ImmGen;
 architecture Generator of ImmGen is
 
 signal TBE: std_logic_vector(11 downto 0);
-
+signal InstCopy: std_logic_vector(9 downto 0);
 begin
-with FullInstruction(14 downto 12)&FullInstruction(6 downto 0) select
-TBE <=  FullInstruction(31 downto 25)&FullInstruction(11 downto 7) when "0100100011",
-		FullInstruction(24)&FullInstruction(24)&FullInstruction(24)&FullInstruction(24)&FullInstruction(24)&FullInstruction(24)&FullInstruction(24)&FullInstruction(24 downto 20) when ("0010010011" OR "1010010011"), -- SRLI SLLI
+InstCopy <= FullInstruction(14 downto 12)&FullInstruction(6 downto 0);
+with InstCopy select
+TBE <=  FullInstruction(31 downto 25)&FullInstruction(11 downto 7) when "0100100011", --sw
+		FullInstruction(24)&FullInstruction(24)&FullInstruction(24)&FullInstruction(24)&FullInstruction(24)&FullInstruction(24)&FullInstruction(24)&FullInstruction(24 downto 20) when "0010010011", -- SRLI 
+		FullInstruction(24)&FullInstruction(24)&FullInstruction(24)&FullInstruction(24)&FullInstruction(24)&FullInstruction(24)&FullInstruction(24)&FullInstruction(24 downto 20) when "1010010011", -- SLLI
 		FullInstruction(31 downto 20) when others;
-
 with ImmGen select 
 Modified_Imm  <= FullInstruction(31) &FullInstruction(31) &FullInstruction(31) &FullInstruction(31) &FullInstruction(31) &FullInstruction(31) &FullInstruction(31) &FullInstruction(31) &FullInstruction(31) &FullInstruction(31) &FullInstruction(31) &FullInstruction(31) &FullInstruction(31) &FullInstruction(31) &FullInstruction(31) &FullInstruction(31) &FullInstruction(31) &FullInstruction(31) &FullInstruction(31) &FullInstruction(31) & FullInstruction(7) & FullInstruction(30 downto 25) & FullInstruction(11 downto 8) & '0' when "01",
 				 FullInstruction(31 downto 12)& "000000000000" when "10",
@@ -194,7 +195,8 @@ architecture BranchSelection of BranchSel is
 
 begin
 with BSel select
-BRes <= '1' when ("011" OR "100"),
-				'0' when others;
+BRes <= '1' when "011",
+		'1' when "100",
+		'0' when others;
 				
 end BranchSelection;

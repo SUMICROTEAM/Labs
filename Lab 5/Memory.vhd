@@ -82,8 +82,7 @@ architecture remember of Registers is
 begin
 --Control Signal Logic
 with ReadReg1 select
-readtemp1 <= "00000" when "00000",
-			 "00001" when "01010",
+readtemp1 <= "00001" when "01010",
 			 "00010" when "01011",
 			 "00011" when "01100",
 			 "00100" when "01101",
@@ -91,11 +90,10 @@ readtemp1 <= "00000" when "00000",
 			 "00110" when "01111",
 			 "00111" when "10000",
 			 "01000" when "10001",
-			 "ZZZZZ" when others;
+			 "00000" when others;
 
 with ReadReg2 select
-readtemp2 <= "00000" when "00000",
-			 "00001" when "01010",
+readtemp2 <= "00001" when "01010",
 			 "00010" when "01011",
 			 "00011" when "01100",
 			 "00100" when "01101",
@@ -103,7 +101,7 @@ readtemp2 <= "00000" when "00000",
 			 "00110" when "01111",
 			 "00111" when "10000",
 			 "01000" when "10001",
-			 "ZZZZZ" when others;
+			 "00000" when others;
 			 
 -- 0 is for x0, 1-8 is for a0-a7
 --Instantiate The reg32 for all 9
