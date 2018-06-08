@@ -100,7 +100,7 @@ architecture holistic of Processor is
 --- ADDED SIGNALS ---
 ------------------------------------------------------------------------------------
 -- Processor pathways
-signal PC_Next,PC_Next4,Next_Inst,Branch_Out,Instruction,D1,D2,ImmOrD2,Imm_Out,ALUOut,DmemOut,RegWriteData: std_logic_vector(31 downto 0);
+signal PC_Next,PC_Next4,Next_Inst,Branch_Out,Instruction,D1,D2,ImmOrD2,Imm_Out,ALUOut,DmemOut,RegWriteData,Mem_Addr: std_logic_vector(31 downto 0);
 -- Control Lines
 signal MemRead,MemtoReg,MemWrite,ALUSrc,RegWrite,BranchMuxSel,ALU_Zero: std_logic;
 signal Ctrl_Branch, ImmGenerator: std_logic_vector(1 downto 0);
@@ -129,7 +129,9 @@ ALU_multiplexor: BusMux2to1 Port Map(ALUSrc,D2,Imm_Out,ImmOrD2);
 
 Processor_ALU: ALU Port Map(D1,ImmOrD2,ALUCtrl(4 downto 0),ALU_Zero,ALUOut);
 
-Data_Memory: RAM Port Map(reset,clock,MemRead,MemWrite,D2(31 downto 2),ALUOut,DmemOut);
+Mem_Addr_Reconcile: adder_subtracter Port Map(ALUOut,X"10000000",'1',Mem_Addr,trash);
+
+Data_Memory: RAM Port Map(reset,clock,MemRead,MemWrite,Mem_Addr(31 downto 2),D2,DmemOut);
 
 Register_Write_Mux: BusMux2to1 Port Map(MemtoReg,ALUOut,DmemOut,RegWriteData);
 

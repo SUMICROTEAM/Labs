@@ -40,7 +40,7 @@ begin
 	if ((OE = '0') AND Address < b"00000000000000000000010000000") then
 		DataOut <= i_ram(to_integer(unsigned(Address)));
 	else
-		DataOut <= "ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ";  
+		DataOut <= X"00000000";  
 	end if;
 	
 	

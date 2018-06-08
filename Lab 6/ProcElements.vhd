@@ -19,8 +19,7 @@ begin
 
 with selector select
 Result <= In1 when '1',
-		  In0 when '0',
-		  "ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ" when others;
+		  In0 when others;
 		  
 end architecture selection;
 
@@ -50,6 +49,8 @@ architecture Boss of Control is
 signal fc3opcode: std_logic_vector(9 downto 0);
 signal fc7fc3opcode: std_logic_vector(16 downto 0);
 signal Wactive: std_logic;
+signal sub_act,lui_act: std_logic_vector(2 downto 0);
+
 
 begin
 
@@ -78,16 +79,21 @@ with opcode select
 -------------------------------------------------------------------------------------
 -- OUTPUT: ALUCtrl THIS ONE
 -------------------------------------------------------------------------------------
+--BOIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII--
+sub_act <= "011" when fc7fc3opcode = "01000000000110011" else "010";
+lui_act <= "100" when opcode = "0110111" else "010";
+
 with fc7fc3opcode select
-	ALUCtrl <= "11101" when "-------1010110011", --srl/srli
-			   "11101" when "-------1010010011",
-			   "00010" when "-------1110110011", -- and/andi
-			   "00010" when "-------1110010011",
-			   "00011" when "-------1100110011", -- or/ori
-			   "00011" when "-------1100010011",
-			   "11110" when "-------0010110011", --sll/slli
-			   "11110" when "-------0010010011",
-			   "10000" when "01000000000110011", --sub
+	ALUCtrl <= "01101" when "0110011", --srl/srli
+			   "01111" when "0010011",
+			   "00100" when "0110011", -- and/andi
+			   "00110" when "0010011",
+			   "01000" when "0110011", -- or/ori
+			   "01010" when "0010011",
+			   "01100" when "0110011", --sll/slli
+			   "01110" when "0010011",
+			   "00010" when "0110011", --sub
+			   "10000" when "0110111", --LUI
 			   "00000" when others; --add
 -------------------------------------------------------------------------------------
 -- OUTPUT: MemWrite -------------------------------------------------------------------
@@ -178,7 +184,7 @@ TBE <=  FullInstruction(31 downto 25)&FullInstruction(11 downto 7) when "0100100
 		FullInstruction(31 downto 20) when others;
 with ImmGen select 
 Modified_Imm  <= FullInstruction(31) &FullInstruction(31) &FullInstruction(31) &FullInstruction(31) &FullInstruction(31) &FullInstruction(31) &FullInstruction(31) &FullInstruction(31) &FullInstruction(31) &FullInstruction(31) &FullInstruction(31) &FullInstruction(31) &FullInstruction(31) &FullInstruction(31) &FullInstruction(31) &FullInstruction(31) &FullInstruction(31) &FullInstruction(31) &FullInstruction(31) &FullInstruction(31) & FullInstruction(7) & FullInstruction(30 downto 25) & FullInstruction(11 downto 8) & '0' when "01",
-				 FullInstruction(31 downto 12)& "000000000000" when "10",
+				 FullInstruction(31 downto 12)& "000000000000" when "10", --LUI
 				 TBE(11)&TBE(11)&TBE(11)&TBE(11)&TBE(11)&TBE(11)&TBE(11)&TBE(11)&TBE(11)&TBE(11)&TBE(11)&TBE(11)&TBE(11)&TBE(11)&TBE(11)&TBE(11)&TBE(11)&TBE(11)&TBE(11)&TBE(11)&TBE(11 downto 0) when others;
 
 end Generator;
