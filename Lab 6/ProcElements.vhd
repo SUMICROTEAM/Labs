@@ -49,8 +49,8 @@ architecture Boss of Control is
 signal fc3opcode: std_logic_vector(9 downto 0);
 signal fc7fc3opcode: std_logic_vector(16 downto 0);
 signal Wactive: std_logic;
-signal sub_act,lui_act: std_logic_vector(2 downto 0);
-
+signal sub_act,lui_act,add_act,srl_act,sll_act,and_act,or_act,addi_act,andi_act,ori_act,srli_act,slli_act: std_logic;
+signal ALU_sel_line: std_logic_vector(11 downto 0);
 
 begin
 
@@ -80,21 +80,31 @@ with opcode select
 -- OUTPUT: ALUCtrl THIS ONE
 -------------------------------------------------------------------------------------
 --BOIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII--
-sub_act <= "011" when fc7fc3opcode = "01000000000110011" else "010";
-lui_act <= "100" when opcode = "0110111" else "010";
-
-with fc7fc3opcode select
-	ALUCtrl <= "01101" when "0110011", --srl/srli
-			   "01111" when "0010011",
-			   "00100" when "0110011", -- and/andi
-			   "00110" when "0010011",
-			   "01000" when "0110011", -- or/ori
-			   "01010" when "0010011",
-			   "01100" when "0110011", --sll/slli
-			   "01110" when "0010011",
-			   "00010" when "0110011", --sub
-			   "10000" when "0110111", --LUI
-			   "00000" when others; --add
+sub_act <= '1' when fc7fc3opcode = "01000000000110011" else '0';
+lui_act <= '1' when opcode = "0110111" else '0';
+add_act <= '1' when  fc3opcode = "0000110011" else '0';
+and_act <= '1' when fc3opcode =  "1110110011" else '0';
+or_act <= '1' when fc3opcode =   "1100110011" else '0';
+srl_act <= '1' when fc3opcode =  "1010110011" else '0';
+sll_act <= '1' when fc3opcode =  "0010110011" else '0';
+addi_act <= '1' when fc3opcode = "0000010011" else '0';
+andi_act <= '1' when fc3opcode = "1110010011" else '0';
+ori_act <= '1' when fc3opcode =  "1100010011" else '0';
+srli_act <= '1' when fc3opcode = "1010010011" else '0';
+slli_act <= '1' when fc3opcode = "0010010011" else '0';
+ALU_sel_line <= sub_act&lui_act&add_act&and_act&or_act&srl_act&sll_act&addi_act&andi_act&ori_act&srli_act&slli_act;
+with ALU_sel_line select
+	ALUCtrl <= "01101" when "000001000000", -- srl
+			   "01111" when "000000000010", -- srli
+			   "00100" when "000100000000", -- and
+			   "00110" when "000000001000", -- andi
+			   "01000" when "000010000000", -- or
+			   "01010" when "000000000100", -- ori
+			   "01100" when "000000100000", -- sll
+			   "01110" when "000000000001", -- slli
+			   "00010" when "100000000000", -- sub
+			   "10000" when "010000000000", -- LUI
+			   "00000" when others;    -- add
 -------------------------------------------------------------------------------------
 -- OUTPUT: MemWrite -------------------------------------------------------------------
 -------------------------------------------------------------------------------------
