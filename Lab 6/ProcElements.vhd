@@ -80,7 +80,6 @@ with opcode select
 -------------------------------------------------------------------------------------
 -- OUTPUT: ALUCtrl THIS ONE
 -------------------------------------------------------------------------------------
---BOIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII--
 sub_act <= '1' when fc7fc3opcode = "01000000000110011" else '0';
 lui_act <= '1' when opcode = "0110111" else '0';
 and_act <= '1' when fc3opcode =  "1110110011" else '0';
@@ -91,7 +90,7 @@ andi_act <= '1' when fc3opcode = "1110010011" else '0';
 ori_act <= '1' when fc3opcode =  "1100010011" else '0';
 srli_act <= '1' when fc3opcode = "1010010011" else '0';
 slli_act <= '1' when fc3opcode = "0010010011" else '0';
--- eyoo
+
 add_act <= '1' when fc7fc3opcode = "00000000000110011" else '0';
 beq_act <= '1' when fc3opcode = "0001100011" else '0';
 bne_act <= '1' when fc3opcode = "0011100011" else '0';
